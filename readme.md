@@ -21,6 +21,20 @@ The system combines Artificial Intelligence, SQL automation, data visualization,
 
 ---
 
+# 📸 Project Screenshots
+
+## Dashboard Interface
+
+<img width="100%" alt="Dashboard Screenshot" src="./frontend//src//assets//img1.png">
+
+---
+
+## AI Visualization & Query Results
+
+<img width="100%" alt="Analytics Screenshot" src="./frontend//src//assets//img22.png">
+
+---
+
 # 🧠 How It Works
 
 ```text
@@ -66,20 +80,6 @@ Tables + Charts Rendered
 
 - Llama 3.3 70B Versatile
 - Powered by Groq
-
----
-
-# 📸 Project Screenshots
-
-## Dashboard Interface
-
-<img width="100%" alt="Dashboard Screenshot" src="./frontend//src//assets//img1.png">
-
----
-
-## AI Visualization & Query Results
-
-<img width="100%" alt="Analytics Screenshot" src="./frontend//src//assets//img22.png">
 
 ---
 
