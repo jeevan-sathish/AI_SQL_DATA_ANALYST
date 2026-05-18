@@ -7,22 +7,16 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
 
-# ----------------------------
-# LOAD ENV
-# ----------------------------
+
 
 load_dotenv()
 
-# ----------------------------
-# FLASK
-# ----------------------------
+
 
 app = Flask(__name__)
 CORS(app)
 
-# ----------------------------
-# CREATE DATABASE FOLDER
-# ----------------------------
+
 
 os.makedirs("database", exist_ok=True)
 
@@ -30,23 +24,17 @@ DB_PATH = "database/data.db"
 
 os.makedirs("database", exist_ok=True)
 
-# ----------------------------
-# GROQ
-# ----------------------------
+
 
 client = Groq(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
-# ----------------------------
-# STORE CURRENT TABLE
-# ----------------------------
+
 
 CURRENT_TABLE = None
 
-# ----------------------------
-# CLEAN SQL
-# ----------------------------
+
 
 def clean_sql(sql):
 
@@ -56,9 +44,7 @@ def clean_sql(sql):
         .strip()
     )
 
-# ----------------------------
-# GENERATE SQL
-# ----------------------------
+
 
 def generate_sql(question, table_name, columns):
 
@@ -103,9 +89,7 @@ Question:
 
     return clean_sql(sql)
 
-# ----------------------------
-# HOME
-# ----------------------------
+
 
 @app.route("/")
 def home():
@@ -114,9 +98,7 @@ def home():
         "message": "AI SQL Analyst Backend Running"
     })
 
-# ----------------------------
-# UPLOAD DATASET
-# ----------------------------
+
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
@@ -130,18 +112,17 @@ def upload_file():
 
     file = request.files["file"]
 
-    # Read CSV
     df = pd.read_csv(file)
 
-    # Create table name from filename
+  
     table_name = os.path.splitext(file.filename)[0]
 
-    # Clean table name
+  
     table_name = table_name.replace(" ", "_").lower()
 
     conn = sqlite3.connect(DB_PATH)
 
-    # Save dataset
+    
     df.to_sql(
         table_name,
         conn,
@@ -151,7 +132,7 @@ def upload_file():
 
     conn.close()
 
-    # Store latest table
+    
     CURRENT_TABLE = table_name
 
     return jsonify({
@@ -160,9 +141,7 @@ def upload_file():
         "columns": list(df.columns)
     })
 
-# ----------------------------
-# ASK QUESTION
-# ----------------------------
+
 
 @app.route("/ask", methods=["POST"])
 def ask_question():
@@ -180,9 +159,7 @@ def ask_question():
 
     conn = sqlite3.connect(DB_PATH)
 
-    # ----------------------------
-    # GET COLUMNS
-    # ----------------------------
+  
 
     columns_query = f"""
     PRAGMA table_info({CURRENT_TABLE})
@@ -195,9 +172,7 @@ def ask_question():
 
     columns = cols_df["name"].tolist()
 
-    # ----------------------------
-    # GENERATE SQL
-    # ----------------------------
+ 
 
     sql_query = generate_sql(
         question,
@@ -205,9 +180,7 @@ def ask_question():
         columns
     )
 
-    # ----------------------------
-    # SECURITY CHECK
-    # ----------------------------
+   
 
     if not sql_query.lower().startswith("select"):
 
@@ -215,9 +188,7 @@ def ask_question():
             "error": "Only SELECT queries allowed"
         }), 400
 
-    # ----------------------------
-    # EXECUTE SQL
-    # ----------------------------
+  
 
     result_df = pd.read_sql_query(
         sql_query,
@@ -234,9 +205,7 @@ def ask_question():
         "data": result_df.to_dict(orient="records")
     })
 
-# ----------------------------
-# GET TABLES
-# ----------------------------
+
 
 @app.route("/tables")
 def get_tables():
@@ -258,7 +227,7 @@ def get_tables():
         "current_table": CURRENT_TABLE
     })
 
-# ----------------------------
+
 
 if __name__ == "__main__":
 
